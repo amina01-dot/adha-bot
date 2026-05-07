@@ -2,9 +2,8 @@ import time
 import hashlib
 import os
 import json
-from datetime import datetime
-from playwright.sync_api import sync_playwright
 import requests
+from datetime import datetime
 
 TOKEN = os.environ.get("TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
@@ -36,14 +35,14 @@ def save_state(status, hash_val):
         json.dump({"last_status": status, "last_hash": hash_val}, f)
 
 def fetch_page():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto(URL, timeout=30000)
-        page.wait_for_timeout(5000)
-        content = page.content()
-        browser.close()
-        return content
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Accept-Language": "ar,fr;q=0.9,en;q=0.8",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    }
+    r = requests.get(URL, headers=headers, timeout=15)
+    r.encoding = "utf-8"
+    return r.text
 
 def analyze(content):
     if TARGET not in content:
